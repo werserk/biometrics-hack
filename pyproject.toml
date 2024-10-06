@@ -2,7 +2,7 @@
 name = "biometrics-hack"
 version = "0.1.0"
 description = ""
-authors = ["Maxim Kirilyuk <werserk@inbox.ru>, Artem Vlasov <temamed@gmail.com"]
+authors = ["Maxim Kirilyuk <werserk@inbox.ru>, Artem Vlasov <tyomamed@gmail.com"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
