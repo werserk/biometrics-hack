@@ -1,6 +1,6 @@
 # Декодирование изображения лица из вектора
 
-![header.png](images/header.png)
+![header.png](assets/header.png)
 
 ## Ссылки
 
