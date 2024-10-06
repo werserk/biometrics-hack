@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "biometrics-hack"
+version = "0.1.0"
+description = ""
+authors = ["Maxim Kirilyuk <werserk@inbox.ru>, Artem Vlasov <temamed@gmail.com"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[tool.poetry.group.dev.dependencies]
+black = {extras = ["jupyter"], version = "^24.8.0"}
+tqdm = "^4.66.5"
+jupyter = "^1.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
