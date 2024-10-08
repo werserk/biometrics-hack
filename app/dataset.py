@@ -57,7 +57,8 @@ class DatasetI2E(Dateset):
 
     def get_embedding(self, image: np.array) -> np.ndarray:
         faces = self.model.get(image)
-        return faces[0].normed_embedding
+        face = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
+        return face['embedding']
 
     def generate_dataset(self, data: pd.DataFrame, root_path: str, path_to_save: str):
         """
