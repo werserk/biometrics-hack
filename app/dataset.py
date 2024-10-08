@@ -143,9 +143,9 @@ class DatasetE2I(Dateset):
 
 
 if __name__ == '__main__':
-    app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
-    app.prepare(ctx_id=0, det_size=(640, 640))
-    data = pd.read_csv('/mnt/sda1/hackathons/biometrics-hack/archive/annotations/meta/meta.csv')
+    # app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+    # app.prepare(ctx_id=0, det_size=(640, 640))
+    # data = pd.read_csv('/mnt/sda1/hackathons/biometrics-hack/archive/annotations/meta/meta.csv')
 
     # dataset = Dataset(app)
     # dataset.generate_dataset(data, '/mnt/sda1/hackathons/biometrics-hack/archive/images', '/home/blogerlu/biometrics/biometrics-hack/embeddings')
@@ -161,7 +161,7 @@ if __name__ == '__main__':
 
     if args.mod == 'I2E':
         app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
-        app.prepare(ctx_id=0, det_size=(640, 640))
+        app.prepare(ctx_id=0, det_size=(64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0, 640))
 
         dataset = DatasetI2E(app)
         dataset.generate_dataset(data, args.root_path, args.path_to_save)
