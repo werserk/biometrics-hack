@@ -5,3 +5,4 @@ venv/
 
 models/
 Arc2Face/
+embeddings/
