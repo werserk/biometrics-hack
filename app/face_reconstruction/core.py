@@ -30,7 +30,7 @@ class FaceReconstructor:
             unet=unet,
             torch_dtype=torch.float16,
             safety_checker=None,
-            use_auth_token=os.getenv("HF_TOKEN"),
+            # use_auth_token=os.getenv("HF_TOKEN"),
         )
         self.pipeline.scheduler = DPMSolverMultistepScheduler.from_config(self.pipeline.scheduler.config)
         self.pipeline = self.pipeline.to(device)
