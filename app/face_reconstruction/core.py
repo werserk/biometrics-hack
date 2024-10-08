@@ -1,6 +1,5 @@
-import os
 import warnings
-from typing import List
+from typing import List, Union
 
 import numpy as np
 import torch
@@ -41,10 +40,12 @@ class FaceReconstructor:
 
     def image2embedding(self, image: np.array) -> torch.Tensor:
         faces = self.model.get(image)
-        faces = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[
-            -1
-        ]  # select largest face (if more than one detected)
-        id_embedding = torch.tensor(faces["embedding"], dtype=torch.float16)[None].cuda()
+        faces = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
+        id_embedding = self.prepare_id_embedding(faces["embedding"])
+        return id_embedding
+
+    def prepare_id_embedding(self, embedding: Union[np.array, torch.Tensor]) -> torch.Tensor:
+        id_embedding = torch.tensor(embedding, dtype=torch.float16)[None].cuda()
         id_embedding = id_embedding / torch.norm(id_embedding, dim=1, keepdim=True)  # normalize embedding
         id_embedding = project_face_embs(self.pipeline, id_embedding)  # pass through the encoder
         return id_embedding
