@@ -45,9 +45,10 @@ class FaceReconstructor:
         return id_embedding
 
     def generate_images_by_embedding(self, embedding: torch.Tensor, num_images: int) -> List[np.array]:
-        return self.pipeline(
+        images = self.pipeline(
             prompt_embeds=embedding, num_inference_steps=25, guidance_scale=3.0, num_images_per_prompt=num_images
         ).images
+        return [np.array(image) for image in images]
 
     def generate_similar_images(self, image: np.array, num_images: int) -> List[np.array]:
         return self.generate_images_by_embedding(self.image2embedding(image), num_images)
