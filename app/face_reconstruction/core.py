@@ -1,19 +1,23 @@
+import os
 import warnings
 from typing import List
 
 import numpy as np
 import torch
 from diffusers import StableDiffusionPipeline, UNet2DConditionModel, DPMSolverMultistepScheduler
+from dotenv import load_dotenv
 from insightface.app import FaceAnalysis
 
 from Arc2Face.arc2face import CLIPTextModelWrapper, project_face_embs
 from app.face_reconstruction.download import load_models
 
+load_dotenv()
 warnings.filterwarnings("ignore")
 
 
 class FaceReconstructor:
     BASE_SD_MODEL = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    BETTER_SD_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"
 
     def __init__(self, root_dir: str, models_dir: str, device: str = "cuda", download_models: bool = False) -> None:
         if download_models:
@@ -26,6 +30,7 @@ class FaceReconstructor:
             unet=unet,
             torch_dtype=torch.float16,
             safety_checker=None,
+            use_auth_token=os.getenv("HF_TOKEN"),
         )
         self.pipeline.scheduler = DPMSolverMultistepScheduler.from_config(self.pipeline.scheduler.config)
         self.pipeline = self.pipeline.to(device)
