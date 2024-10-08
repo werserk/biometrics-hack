@@ -2,6 +2,10 @@ import cv2
 import pandas as pd
 import numpy as np
 import os
+from insightface.app import FaceAnalysis
+from insightface.data import get_image as ins_get_image
+from scipy.spatial.distance import cosine, euclidean, cityblock
+#%%
 
 class Dataset:
     def __init__(self, model):
@@ -43,3 +47,12 @@ class Dataset:
         faces = self.model.get(image)
         return faces[0].normed_embedding
 
+
+
+if __name__ == '__main__':
+    app = FaceAnalysis(providers=["CPUExecutionProvider"])
+    app.prepare(ctx_id=0, det_size=(640, 640))
+    data = pd.read_csv('/mnt/sda1/hackathons/biometrics-hack/archive/annotations/meta/meta.csv')
+
+    dataset = Dataset(app)
+    dataset.generate_dataset(data, '/mnt/sda1/hackathons/biometrics-hack/archive/images', '/mnt/sda1/hackathons/biometrics-hack/archive/embeddings')
