@@ -1,19 +1,21 @@
-import cv2
-import pandas as pd
-import numpy as np
-import os
-from insightface.app import FaceAnalysis
-from insightface.data import get_image as ins_get_image
-from scipy.spatial.distance import cosine, euclidean, cityblock
-from app.face_reconstruction import FaceReconstructor
-import torch
 import argparse
+import os
+import sys
 
-#%%
+import cv2
+import numpy as np
+import pandas as pd
+import torch
+from insightface.app import FaceAnalysis
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.face_reconstruction import FaceReconstructor
+
 
 class Dateset:
     def __init__(self):
-        self.data_types = ['test', 'train', 'val']
+        self.data_types = ["test", "train", "val"]
 
     def create_folders(self, path_to_folder: str):
         os.mkdir(path_to_folder)
@@ -21,7 +23,7 @@ class Dateset:
             try:
                 os.mkdir(os.path.join(path_to_folder, tp))
             except FileExistsError:
-                print(f'file {tp} already exists in {os.path.dirname(path_to_folder)}')
+                print(f"file {tp} already exists in {os.path.dirname(path_to_folder)}")
 
     @staticmethod
     def file_check(path_to_file: str):
@@ -31,12 +33,13 @@ class Dateset:
             return True
         return False
 
+
 class DatasetI2E(Dateset):
     def __init__(self, model):
         super().__init__()
 
-        self.data_types = ['test', 'train', 'val']
-        self.model = model#%%
+        self.data_types = ["test", "train", "val"]
+        self.model = model  # %%
 
     @staticmethod
     def save_embedding(path_to_save: str, embedding: np.ndarray):
@@ -61,29 +64,27 @@ class DatasetI2E(Dateset):
         """
         self.create_folders(path_to_save)
         for _, row in data.iterrows():
-            attachment_id = row['attachment_id']
-            user_id = row['user_id']
-            tp = self.data_types[np.argmax([row[dt.replace('val', 'valid')] for dt in self.data_types])]
+            attachment_id = row["attachment_id"]
+            user_id = row["user_id"]
+            tp = self.data_types[np.argmax([row[dt.replace("val", "valid")] for dt in self.data_types])]
 
-            path_to_save_embedding = os.path.join(path_to_save, tp, f'{attachment_id}.npy')
+            path_to_save_embedding = os.path.join(path_to_save, tp, f"{attachment_id}.npy")
             if self.file_check(path_to_save_embedding):
                 continue
-            path_to_image = os.path.join(root_path, tp, attachment_id + '.jpg')
-
+            path_to_image = os.path.join(root_path, tp, attachment_id + ".jpg")
 
             image = self.read_image(path_to_image)
 
             if image is None:
-               print(f'image not find: {attachment_id}, {user_id}, {tp}')
-               continue
+                print(f"image not find: {attachment_id}, {user_id}, {tp}")
+                continue
 
             try:
-               embedding = self.get_embedding(image)
+                embedding = self.get_embedding(image)
             except IndexError:
-               print(f'face not found: {attachment_id}, {user_id}, {tp}')
+                print(f"face not found: {attachment_id}, {user_id}, {tp}")
 
             self.save_embedding(path_to_save_embedding, embedding)
-
 
 
 class DatasetE2I(Dateset):
@@ -94,7 +95,9 @@ class DatasetE2I(Dateset):
         self.reconstructor = FaceReconstructor(root_dir="..", models_dir="../models", device=self.device)
 
     def get_image(self, embedding) -> np.ndarray:
-        images = self.reconstructor.generate_images_by_embedding(torch.from_numpy(embedding).to(self.device), num_images=1)
+        images = self.reconstructor.generate_images_by_embedding(
+            torch.from_numpy(embedding).to(self.device), num_images=1
+        )
         image = images[0]
 
         return image
@@ -119,30 +122,30 @@ class DatasetE2I(Dateset):
         """
         self.create_folders(path_to_save)
         for _, row in data.iterrows():
-            attachment_id = row['attachment_id']
-            user_id = row['user_id']
-            tp = self.data_types[np.argmax([row[dt.replace('val', 'valid')] for dt in self.data_types])]
+            attachment_id = row["attachment_id"]
+            user_id = row["user_id"]
+            tp = self.data_types[np.argmax([row[dt.replace("val", "valid")] for dt in self.data_types])]
 
-            path_to_save_image = os.path.join(path_to_save, tp, f'{attachment_id}.npy')
+            path_to_save_image = os.path.join(path_to_save, tp, f"{attachment_id}.npy")
             if self.file_check(path_to_save_image):
                 continue
 
-            path_to_embedding = os.path.join(root_path, tp, attachment_id + '.npy')
+            path_to_embedding = os.path.join(root_path, tp, attachment_id + ".npy")
 
             embedding = self.read_embedding(path_to_embedding)
 
             if embedding is None:
-               print(f'embedding not find: {attachment_id}, {user_id}, {tp}')
-               continue
+                print(f"embedding not find: {attachment_id}, {user_id}, {tp}")
+                continue
             try:
-               image = self.get_image(embedding)
+                image = self.get_image(embedding)
             except IndexError:
-               print(f'vector error: {attachment_id}, {user_id}, {tp}')
+                print(f"vector error: {attachment_id}, {user_id}, {tp}")
 
             self.save_image(path_to_save_image, image)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
     # app.prepare(ctx_id=0, det_size=(640, 640))
     # data = pd.read_csv('/mnt/sda1/hackathons/biometrics-hack/archive/annotations/meta/meta.csv')
@@ -150,24 +153,22 @@ if __name__ == '__main__':
     # dataset = Dataset(app)
     # dataset.generate_dataset(data, '/mnt/sda1/hackathons/biometrics-hack/archive/images', '/home/blogerlu/biometrics/biometrics-hack/embeddings')
 
-    parser = argparse.ArgumentParser(description='Пример скрипта с параметрами.')
-    parser.add_argument('mod', help='I2E/E2I')
-    parser.add_argument('path_to_csv', help='path to csv file')
-    parser.add_argument('root_path', help='path to images/embeddings [train, val, test]')
-    parser.add_argument('path_to_save', help='path to save results')
-
+    parser = argparse.ArgumentParser(description="Пример скрипта с параметрами.")
+    parser.add_argument("mod", help="I2E/E2I")
+    parser.add_argument("path_to_csv", help="path to csv file")
+    parser.add_argument("root_path", help="path to images/embeddings [train, val, test]")
+    parser.add_argument("path_to_save", help="path to save results")
 
     args = parser.parse_args()
     data = pd.read_csv(args.path_to_csv)
 
-    if args.mod == 'I2E':
+    if args.mod == "I2E":
         app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
         app.prepare(ctx_id=0, det_size=(640, 640))
 
         dataset = DatasetI2E(app)
         dataset.generate_dataset(data, args.root_path, args.path_to_save)
 
-    elif args.mod == 'E2I':
+    elif args.mod == "E2I":
         dataset = DatasetE2I()
         dataset.generate_dataset(data, args.root_path, args.path_to_save)
-
