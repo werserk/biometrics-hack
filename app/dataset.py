@@ -12,18 +12,23 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.face_reconstruction import FaceReconstructor
 
-
 class Dateset:
     def __init__(self):
         self.data_types = ["test", "train", "val"]
 
+
+    @staticmethod
+    def create_folder(path_to_folder):
+        try:
+            os.mkdir(path_to_folder)
+        except FileExistsError:
+            print(f'file {path_to_folder} already exists ')
+
     def create_folders(self, path_to_folder: str):
-        os.mkdir(path_to_folder)
+
+        self.create_folder(path_to_folder)
         for tp in self.data_types:
-            try:
-                os.mkdir(os.path.join(path_to_folder, tp))
-            except FileExistsError:
-                print(f"file {tp} already exists in {os.path.dirname(path_to_folder)}")
+            self.create_folder(os.path.join(path_to_folder, tp))
 
     @staticmethod
     def file_check(path_to_file: str):
