@@ -5,20 +5,11 @@ from app.face_reconstruction import FaceReconstructor
 
 
 def init_reconstructor() -> None:
-    FaceReconstructor(
-        root_dir="..",
-        models_dir="../models",
-        device="cuda",
-        download_models=True
-    )
+    FaceReconstructor(root_dir="..", models_dir="../models", device="cuda", download_models=True)
 
 
 def test_image(test_image_path: str) -> None:
-    reconstructor = FaceReconstructor(
-        root_dir="..",
-        models_dir="../models",
-        device="cuda"
-    )
+    reconstructor = FaceReconstructor(root_dir="..", models_dir="../models", device="cuda")
 
     test_image = cv2.imread(test_image_path)
 
@@ -39,7 +30,7 @@ def test_image(test_image_path: str) -> None:
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     init_reconstructor()
     test_image("../assets/examples/max.jpg")
     test_image("../assets/examples/artem.jpg")

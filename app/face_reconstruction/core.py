@@ -3,11 +3,7 @@ from typing import List
 
 import numpy as np
 import torch
-from diffusers import (
-    StableDiffusionPipeline,
-    UNet2DConditionModel,
-    DPMSolverMultistepScheduler
-)
+from diffusers import StableDiffusionPipeline, UNet2DConditionModel, DPMSolverMultistepScheduler
 from insightface.app import FaceAnalysis
 
 from Arc2Face.arc2face import CLIPTextModelWrapper, project_face_embs
@@ -25,13 +21,17 @@ class FaceReconstructor:
         encoder = CLIPTextModelWrapper.from_pretrained(models_dir, subfolder="encoder", torch_dtype=torch.float16)
         unet = UNet2DConditionModel.from_pretrained(models_dir, subfolder="arc2face", torch_dtype=torch.float16)
         self.pipeline = StableDiffusionPipeline.from_pretrained(
-            FaceReconstructor.BASE_SD_MODEL, text_encoder=encoder, unet=unet, torch_dtype=torch.float16,
-            safety_checker=None
+            FaceReconstructor.BASE_SD_MODEL,
+            text_encoder=encoder,
+            unet=unet,
+            torch_dtype=torch.float16,
+            safety_checker=None,
         )
         self.pipeline.scheduler = DPMSolverMultistepScheduler.from_config(self.pipeline.scheduler.config)
         self.pipeline = self.pipeline.to(device)
-        self.app = FaceAnalysis(name="antelopev2", root=root_dir,
-                                providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+        self.app = FaceAnalysis(
+            name="antelopev2", root=root_dir, providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+        )
         self.app.prepare(ctx_id=0, det_size=(640, 640))
 
     def image2embedding(self, image: np.array) -> torch.Tensor:
@@ -45,8 +45,9 @@ class FaceReconstructor:
         return id_embedding
 
     def generate_images_by_embedding(self, embedding: torch.Tensor, num_images: int) -> List[np.array]:
-        return self.pipeline(prompt_embeds=embedding, num_inference_steps=25, guidance_scale=3.0,
-                             num_images_per_prompt=num_images).images
+        return self.pipeline(
+            prompt_embeds=embedding, num_inference_steps=25, guidance_scale=3.0, num_images_per_prompt=num_images
+        ).images
 
     def generate_similar_images(self, image: np.array, num_images: int) -> List[np.array]:
         return self.generate_images_by_embedding(self.image2embedding(image), num_images)
