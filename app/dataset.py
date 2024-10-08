@@ -42,7 +42,6 @@ class Dateset:
 class DatasetI2E(Dateset):
     def __init__(self, model):
         super().__init__()
-
         self.data_types = ["test", "train", "val"]
         self.model = model  # %%
 
