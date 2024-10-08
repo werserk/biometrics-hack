@@ -156,12 +156,13 @@ if __name__ == '__main__':
     parser.add_argument('root_path', help='path to images/embeddings [train, val, test]')
     parser.add_argument('path_to_save', help='path to save results')
 
+
     args = parser.parse_args()
     data = pd.read_csv(args.path_to_csv)
 
     if args.mod == 'I2E':
         app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
-        app.prepare(ctx_id=0, det_size=(64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0, 640))
+        app.prepare(ctx_id=0, det_size=(640, 640))
 
         dataset = DatasetI2E(app)
         dataset.generate_dataset(data, args.root_path, args.path_to_save)
