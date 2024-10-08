@@ -14,6 +14,7 @@ diffusers = "0.23.0"
 onnxruntime = "^1.19.2"
 gdown = "^5.2.0"
 python-dotenv = "^1.0.1"
+pandas = "^2.2.3"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^24.8.0"}
