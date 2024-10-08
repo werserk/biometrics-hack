@@ -22,6 +22,9 @@ Clone Arc2Face repository:
 git clone https://github.com/FoivosPar/Arc2Face.git
 ```
 
+Install:
+https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/ffhq.pkl
+
 Install dependencies with poetry (requires python 3.12):
 
 ```bash

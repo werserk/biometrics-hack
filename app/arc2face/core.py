@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from insightface.app import FaceAnalysis
 
 from Arc2Face.arc2face import CLIPTextModelWrapper, project_face_embs
-from app.face_reconstruction.download import load_models
+from app.arc2face.download import load_models
 
 load_dotenv()
 warnings.filterwarnings("ignore")

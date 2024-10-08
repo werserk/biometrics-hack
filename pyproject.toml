@@ -8,12 +8,12 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 insightface = "^0.7.3"
-torch = "^2.4.1"
 transformers = "4.34"
 diffusers = "0.23.0"
 onnxruntime = "^1.19.2"
 gdown = "^5.2.0"
 python-dotenv = "^1.0.1"
+facenet-pytorch = "^2.6.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^24.8.0"}

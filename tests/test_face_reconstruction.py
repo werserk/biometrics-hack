@@ -1,7 +1,7 @@
 import cv2
 from matplotlib import pyplot as plt
 
-from app.face_reconstruction import FaceReconstructor
+from app.arc2face import FaceReconstructor
 
 
 def init_reconstructor() -> None:
