@@ -1,19 +1,22 @@
 import warnings
-from typing import List
+from typing import List, Union
 
 import numpy as np
 import torch
 from diffusers import StableDiffusionPipeline, UNet2DConditionModel, DPMSolverMultistepScheduler
+from dotenv import load_dotenv
 from insightface.app import FaceAnalysis
 
 from Arc2Face.arc2face import CLIPTextModelWrapper, project_face_embs
 from app.face_reconstruction.download import load_models
 
+load_dotenv()
 warnings.filterwarnings("ignore")
 
 
 class FaceReconstructor:
     BASE_SD_MODEL = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    BETTER_SD_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"
 
     def __init__(self, root_dir: str, models_dir: str, device: str = "cuda", download_models: bool = False) -> None:
         if download_models:
@@ -26,6 +29,7 @@ class FaceReconstructor:
             unet=unet,
             torch_dtype=torch.float16,
             safety_checker=None,
+            # use_auth_token=os.getenv("HF_TOKEN"),
         )
         self.pipeline.scheduler = DPMSolverMultistepScheduler.from_config(self.pipeline.scheduler.config)
         self.pipeline = self.pipeline.to(device)
@@ -36,10 +40,12 @@ class FaceReconstructor:
 
     def image2embedding(self, image: np.array) -> torch.Tensor:
         faces = self.model.get(image)
-        faces = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[
-            -1
-        ]  # select largest face (if more than one detected)
-        id_embedding = torch.tensor(faces["embedding"], dtype=torch.float16)[None].cuda()
+        faces = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
+        id_embedding = self.prepare_id_embedding(faces["embedding"])
+        return id_embedding
+
+    def prepare_id_embedding(self, embedding: Union[np.array, torch.Tensor]) -> torch.Tensor:
+        id_embedding = torch.tensor(embedding, dtype=torch.float16)[None].cuda()
         id_embedding = id_embedding / torch.norm(id_embedding, dim=1, keepdim=True)  # normalize embedding
         id_embedding = project_face_embs(self.pipeline, id_embedding)  # pass through the encoder
         return id_embedding
