@@ -98,7 +98,7 @@ class DatasetE2I(Dateset):
         super().__init__()
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.reconstructor = FaceReconstructor(root_dir="..", models_dir="../models", device=self.device)
+        self.reconstructor = FaceReconstructor(root_dir=".", models_dir="./models", device=self.device)
 
     def get_image(self, embedding) -> np.ndarray:
         images = self.reconstructor.generate_images_by_embedding(
