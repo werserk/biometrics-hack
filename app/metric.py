@@ -14,9 +14,8 @@ ImageType = Union[np.ndarray, str]
 
 
 class Similarity:
-    def __init__(self) -> None:
-        self.model = FaceAnalysis(providers=["CPUExecutionProvider"])
-        self.model.prepare(ctx_id=0, det_size=(640, 640))
+    def __init__(self, model: FaceAnalysis) -> None:
+        self.model = model
 
     def get_embedding(self, image: np.array) -> np.ndarray:
         faces = self.model.get(image)

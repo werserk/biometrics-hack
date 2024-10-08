@@ -29,13 +29,13 @@ class FaceReconstructor:
         )
         self.pipeline.scheduler = DPMSolverMultistepScheduler.from_config(self.pipeline.scheduler.config)
         self.pipeline = self.pipeline.to(device)
-        self.app = FaceAnalysis(
+        self.model = FaceAnalysis(
             name="antelopev2", root=root_dir, providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
         )
-        self.app.prepare(ctx_id=0, det_size=(640, 640))
+        self.model.prepare(ctx_id=0, det_size=(640, 640))
 
     def image2embedding(self, image: np.array) -> torch.Tensor:
-        faces = self.app.get(image)
+        faces = self.model.get(image)
         faces = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[
             -1
         ]  # select largest face (if more than one detected)
