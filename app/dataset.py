@@ -21,7 +21,7 @@ class Dateset:
             try:
                 os.mkdir(os.path.join(path_to_folder, tp))
             except FileExistsError:
-                print(f'file {tp} already exists in {path_to_folder.split('/')[-1]}')
+                print(f'file {tp} already exists in {os.path.dirname(path_to_folder)}')
 
     @staticmethod
     def file_check(path_to_file: str):
