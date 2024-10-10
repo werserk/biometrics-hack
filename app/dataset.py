@@ -55,10 +55,12 @@ class DatasetI2E(Dateset):
         return image
 
     def get_embedding(self, image: np.array) -> np.ndarray:
-        faces = self.model.get(image)
-        face = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
-        return face['embedding']
+        # faces = self.model.get(image)
+        # face = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
+        embedding = self.model.image2embedding(image)
 
+        # return face['embedding']
+        return embedding
     def generate_dataset(self, data: pd.DataFrame, root_path: str, path_to_save: str):
         """
 
@@ -158,7 +160,7 @@ if __name__ == "__main__":
     # dataset = Dataset(app)
     # dataset.generate_dataset(data, '/mnt/sda1/hackathons/biometrics-hack/archive/images', '/home/blogerlu/biometrics/biometrics-hack/embeddings')
 
-    parser = argparse.ArgumentParser(description="Пример скрипта с параметрами.")
+    parser = argparse.ArgumentParser(description="create dataset")
     parser.add_argument("mod", help="I2E/E2I")
     parser.add_argument("path_to_csv", help="path to csv file")
     parser.add_argument("root_path", help="path to images/embeddings [train, val, test]")
@@ -170,8 +172,9 @@ if __name__ == "__main__":
     if args.mod == "I2E":
         app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
         app.prepare(ctx_id=0, det_size=(640, 640))
+        reconstructor = FaceReconstructor(root_dir="..", models_dir="../models", device="cuda")
 
-        dataset = DatasetI2E(app)
+        dataset = DatasetI2E(reconstructor)
         dataset.generate_dataset(data, args.root_path, args.path_to_save)
 
     elif args.mod == "E2I":
