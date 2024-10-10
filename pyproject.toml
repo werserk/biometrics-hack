@@ -6,16 +6,16 @@ authors = ["team 4U"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 insightface = "^0.7.3"
-torch = "^2.4.1"
-transformers = "4.34"
-diffusers = "0.23.0"
 onnxruntime = "^1.19.2"
 gdown = "^5.2.0"
 python-dotenv = "^1.0.1"
 pandas = "^2.2.3"
 opencv-python = "^4.10.0.84"
+transformers = "4.34"
+diffusers = "0.23.0"
+torch = "^2.4.1"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^24.8.0"}

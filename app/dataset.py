@@ -12,17 +12,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.face_reconstruction import FaceReconstructor
 
+
 class Dateset:
     def __init__(self):
         self.data_types = ["test", "train", "val"]
-
 
     @staticmethod
     def create_folder(path_to_folder):
         try:
             os.mkdir(path_to_folder)
         except FileExistsError:
-            print(f'file {path_to_folder} already exists ')
+            print(f"file {path_to_folder} already exists ")
 
     def create_folders(self, path_to_folder: str):
 
@@ -57,7 +57,7 @@ class DatasetI2E(Dateset):
     def get_embedding(self, image: np.array) -> np.ndarray:
         faces = self.model.get(image)
         face = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
-        return face['embedding']
+        return face["embedding"]
 
     def generate_dataset(self, data: pd.DataFrame, root_path: str, path_to_save: str):
         """
