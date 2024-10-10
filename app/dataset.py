@@ -60,7 +60,7 @@ class DatasetI2E(Dateset):
         embedding = self.model.image2embedding(image)
 
         # return face['embedding']
-        return embedding
+        return embedding.cpu().numpy()
     def generate_dataset(self, data: pd.DataFrame, root_path: str, path_to_save: str):
         """
 
@@ -172,10 +172,10 @@ if __name__ == "__main__":
     if args.mod == "I2E":
         app = FaceAnalysis(providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
         app.prepare(ctx_id=0, det_size=(640, 640))
-        reconstructor = FaceReconstructor(root_dir="..", models_dir="../models", device="cuda")
-
-        dataset = DatasetI2E(reconstructor)
-        dataset.generate_dataset(data, args.root_path, args.path_to_save)
+        reconstructor = FaceReconstructor(root_dir=".", models_dir="./models", device="cuda")
+        with torch.no_grad():
+           dataset = DatasetI2E(reconstructor)
+           dataset.generate_dataset(data, args.root_path, args.path_to_save)
 
     elif args.mod == "E2I":
         dataset = DatasetE2I()
