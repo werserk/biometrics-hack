@@ -60,7 +60,7 @@ class DatasetI2E(Dateset):
         embedding = self.model.image2embedding(image)
 
         # return face['embedding']
-        return embedding.cpu().numpy()
+        return embedding
     def generate_dataset(self, data: pd.DataFrame, root_path: str, path_to_save: str):
         """
 
