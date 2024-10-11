@@ -9,10 +9,10 @@ import torch.optim as optim
 from model_train.dataset import VectorDataset
 from model_train.models import VectorModel
 
-input_dir = '/dt/embeddings'  # Путь к папке с input
-output_dir = '/dt/embeddings_antilop'  # Путь к папке с output
-input_dim = 256  # Размерность входных векторов, например
-batch_size = 2
+input_dir = '/home/blogerlu/biometrics/biometrics-hack/embeddings'  # Путь к папке с input
+output_dir = '/home/blogerlu/biometrics/biometrics-hack/embeddings_antilop'  # Путь к папке с output
+input_dim = 512  # Размерность входных векторов, например
+batch_size = 10
 epochs = 20
 learning_rate = 1e-3
 
@@ -38,10 +38,11 @@ for epoch in range(epochs):
 
         # Обнуление градиентов
         optimizer.zero_grad()
-
+        print(inputs.shape)
         # Прямой проход
         outputs = model(inputs)
-
+        print(outputs.shape)
+        print(targets.shape)
         # Вычисление потерь
         loss = criterion(outputs, targets)
 
