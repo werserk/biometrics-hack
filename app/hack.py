@@ -61,6 +61,7 @@ class Hacker:
         true_embedding = self.read_embedding(path_to_embedding)
         transposer_embedding = self.embedding_transposer(true_embedding)
         image = self.generate_image(transposer_embedding)
+        self.save_image('image_res.jpg', image)
         predict_embedding = self.get_embedding(image)
         cosine_dist = self.embeddings_diff(true_embedding, predict_embedding)
 
