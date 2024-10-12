@@ -6,6 +6,7 @@ import torch
 from app.face_reconstruction import FaceReconstructor
 from insightface.app import FaceAnalysis
 from sklearn.metrics.pairwise import cosine_distances
+from model_train.models import ComplexVectorModel
 
 class Hacker:
     def __init__(self, model_transposer, ):
@@ -23,8 +24,9 @@ class Hacker:
 
         return embedding
 
-    def embedding_transposer(self):
-        pass
+    def embedding_transposer(self, embedding: np.ndarray) -> np.ndarray:
+        with torch.no_grad():
+            return self.model_transposer(torch.Tensor(embedding)).numpy()
 
     def generate_image(self, embedding: np.ndarray) -> np.ndarray:
         images = self.reconstructor.generate_images_by_embedding(
@@ -61,5 +63,13 @@ class Hacker:
 
 
 if __name__ == "__main__":
-    model_transposer =
-    hacker = Hacker()
+    model_transposer = ComplexVectorModel(input_dim=512, output_dim=512)
+
+    model_filename = '../models/model_epoch_150_train_0.3337_val_0.2361.pth'  # Укажи путь к файлу с весами
+    model_transposer.load_state_dict(torch.load(model_filename, map_location=torch.device('cpu')))
+
+    # Перевод модели в режим оценки
+    model_transposer.eval()
+
+    hacker = Hacker(model_transposer)
+    hacker.metric('/home/tema/hackathons/biometrics-hack/dt/embeddings/train/407e9ee9-c882-4ac4-a57e-064d77fabca0.npy')
