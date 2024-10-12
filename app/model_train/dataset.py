@@ -7,7 +7,7 @@ class VectorDataset(Dataset):
     def __init__(self, input_dir, output_dir, split='train'):
         self.input_dir = os.path.join(input_dir, split)
         self.output_dir = os.path.join(output_dir, split)
-        self.files = os.listdir(self.input_dir)
+        self.files = os.listdir(self.output_dir)
 
     def __len__(self):
         return len(self.files)
