@@ -51,11 +51,11 @@ class TransformerModel(nn.Module):
         self.fc_out = nn.Linear(output_dim, output_dim)
     
     def forward(self, x):
-        x = self.input_fc(x).unsqueeze(1)  # Добавляем ось для трансформера
+        x = self.input_fc(x).unsqueeze(1)
         
         out = self.transformer(x, x)
         
-        out = self.fc_out(out.squeeze(1))  # Убираем временную ось
+        out = self.fc_out(out.squeeze(1))
         
         return out
 

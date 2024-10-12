@@ -29,14 +29,17 @@ output_dim = 512  # Размерность выходного вектора
 nhead = 8  # Количество голов в self-attention
 num_encoder_layers = 6
 num_decoder_layers = 6
-learning_rate = 1e-4
-epochs = 50
-batch_size = 32
+learning_rate = 3e-3
+epochs = 500
+batch_size = 128
+save_interval = 50
+save_dir = 'models'
+os.makedirs(save_dir, exist_ok=True)
 
 
-model = TransformerModel(input_dim=input_dim, output_dim=output_dim, 
-                         nhead=nhead, num_encoder_layers=num_encoder_layers, 
-                         num_decoder_layers=num_decoder_layers)
+#model = TransformerModel(input_dim=input_dim, output_dim=output_dim, 
+#                         nhead=nhead, num_encoder_layers=num_encoder_layers, 
+#                         num_decoder_layers=num_decoder_layers)
 
 criterion = nn.MSELoss()
 criterion = nn.CosineEmbeddingLoss()
@@ -71,7 +74,7 @@ for epoch in range(epochs):
 
     # Вывод статистики
     print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}')
-
+    avg_train_loss = running_loss / len(train_loader)
     # Валидация модели
     model.eval()
     val_loss = 0.0
@@ -83,5 +86,12 @@ for epoch in range(epochs):
             val_loss += loss.item()
 
     print(f'Validation Loss: {val_loss / len(val_loader)}')
+
+    avg_val_loss = val_loss / len(val_loader)	
+    if (epoch + 1) % save_interval == 0:
+        model_filename = f"{save_dir}/model_epoch_{epoch+1}_train_{avg_train_loss:.4f}_val_{avg_val_loss:.4f}.pth"
+        torch.save(model.state_dict(), model_filename)
+        print(f"Model saved as {model_filename}")
+
 
 print("Обучение завершено!")
