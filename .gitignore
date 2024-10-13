@@ -8,10 +8,9 @@ models/
 Arc2Face/
 embeddings/
 images_generate/
-embeddings_antilop/
 embeddings_antilopa/
-image_res.jpg
 model_epoch_10_train_0.1028_val_0.1526.pth
 model_epoch_20_train_0.0430_val_0.1178.pth
 model_epoch_30_train_0.0296_val_0.1138.pth
+image_res.jpg
 model_epoch_10_train_0.0809_val_0.1280.pth
