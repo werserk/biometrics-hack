@@ -27,11 +27,11 @@ model = ComplexVectorModel(input_dim=input_dim)
 input_dim = 512  # Размерность входного вектора
 output_dim = 512  # Размерность выходного вектора
 nhead = 8  # Количество голов в self-attention
-num_encoder_layers = 6
-num_decoder_layers = 6
+num_encoder_layers = 4
+num_decoder_layers = 4
 learning_rate = 1e-4
 epochs = 50
-batch_size = 32
+batch_size = 128
 
 
 model = TransformerModel(input_dim=input_dim, output_dim=output_dim, 
@@ -42,6 +42,7 @@ criterion = nn.MSELoss()
 criterion = nn.CosineEmbeddingLoss()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.9)
 
 # Обучение модели
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -90,4 +91,10 @@ for epoch in range(epochs):
         torch.save(model.state_dict(), model_filename)
         print(f"Model saved as {model_filename}")
 
+
+    scheduler.step()
+
+    # Вывод текущего learning rate
+    current_lr = scheduler.get_last_lr()[0]
+    print(current_lr)
 print("Обучение завершено!")
