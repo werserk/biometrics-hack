@@ -27,24 +27,22 @@ model = ComplexVectorModel(input_dim=input_dim)
 input_dim = 512  # Размерность входного вектора
 output_dim = 512  # Размерность выходного вектора
 nhead = 8  # Количество голов в self-attention
-num_encoder_layers = 6
-num_decoder_layers = 6
-learning_rate = 3e-3
-epochs = 500
+num_encoder_layers = 4
+num_decoder_layers = 4
+learning_rate = 1e-4
+epochs = 50
 batch_size = 128
-save_interval = 50
-save_dir = 'models'
-os.makedirs(save_dir, exist_ok=True)
 
 
-#model = TransformerModel(input_dim=input_dim, output_dim=output_dim, 
-#                         nhead=nhead, num_encoder_layers=num_encoder_layers, 
-#                         num_decoder_layers=num_decoder_layers)
+model = TransformerModel(input_dim=input_dim, output_dim=output_dim, 
+                         nhead=nhead, num_encoder_layers=num_encoder_layers, 
+                         num_decoder_layers=num_decoder_layers)
 
 criterion = nn.MSELoss()
 criterion = nn.CosineEmbeddingLoss()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.9)
 
 # Обучение модели
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -74,7 +72,7 @@ for epoch in range(epochs):
 
     # Вывод статистики
     print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}')
-    avg_train_loss = running_loss / len(train_loader)
+
     # Валидация модели
     model.eval()
     val_loss = 0.0
@@ -87,11 +85,16 @@ for epoch in range(epochs):
 
     print(f'Validation Loss: {val_loss / len(val_loader)}')
 
-    avg_val_loss = val_loss / len(val_loader)	
-    if (epoch + 1) % save_interval == 0:
-        model_filename = f"{save_dir}/model_epoch_{epoch+1}_train_{avg_train_loss:.4f}_val_{avg_val_loss:.4f}.pth"
+
+    if (epoch + 1) % 10  == 0:
+        model_filename = f"model_epoch_{epoch+1}_train_{running_loss / len(train_loader):.4f}_val_{val_loss / len(val_loader):.4f}.pth"
         torch.save(model.state_dict(), model_filename)
         print(f"Model saved as {model_filename}")
 
 
+    scheduler.step()
+
+    # Вывод текущего learning rate
+    current_lr = scheduler.get_last_lr()[0]
+    print(current_lr)
 print("Обучение завершено!")
