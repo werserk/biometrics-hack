@@ -36,11 +36,11 @@ class Hacker:
     def generate_image(self, embedding: np.ndarray) -> np.ndarray:
 
         images = self.reconstructor.generate_images_by_embedding(
-            self.reconstructor.prepare_id_embedding(torch.from_numpy(embedding).to(self.device)), num_images=1
+            self.reconstructor.prepare_id_embedding(torch.from_numpy(embedding).to(self.device)), num_images=4
         )
-        image = images[0]
+        #image = images[0]
 
-        return image
+        return images
 
     @staticmethod
     def save_image(path_to_save: str, image: np.ndarray):
@@ -55,19 +55,28 @@ class Hacker:
     @staticmethod
     def embeddings_diff(true_embedding: np.ndarray, predicted_embedding: np.ndarray):
         print(true_embedding.shape, predicted_embedding.shape)
-        cosine_dist = 1 - cosine_distances([true_embedding], [predicted_embedding])
+        cosine_dist = cosine_distances([true_embedding], [predicted_embedding])
         print('COS', cosine_dist)
         return cosine_dist
 
-    def metric(self, path_to_embedding: str):
-        true_embedding = self.read_embedding(path_to_embedding)
+    def metric(self, path_to_embedding):
+        #true_embedding = self.read_embedding(path_to_embedding)
+        true_embedding = path_to_embedding
         transposer_embedding = self.embedding_transposer(true_embedding)
-        image = self.generate_image(transposer_embedding)
-        self.save_image('image_res.jpg', image)
-        predict_embedding = self.get_embedding(image)
-        cosine_dist = self.embeddings_diff(true_embedding, predict_embedding)
-
-        return cosine_dist
+        images = self.generate_image(transposer_embedding)
+        cos = []
+        for image in images:
+           try:
+              self.save_image('image_res.jpg', image)
+              predict_embedding = self.get_embedding(image)
+              cosine_dist = self.embeddings_diff(true_embedding, predict_embedding)
+              cos.append(cosine_dist[0][0])
+           except IndexError:
+              print('error')
+              continue
+        if len(cos) > 0:
+           return np.max(cos)
+        return 'erorr'
 
 
 
@@ -87,11 +96,31 @@ if __name__ == "__main__":
                              nhead=nhead, num_encoder_layers=num_encoder_layers,
                              num_decoder_layers=num_decoder_layers)
 
-    model_filename = '/home/blogerlu/biometrics/biometrics-hack/model_epoch_30_train_0.0296_val_0.1138.pth'  # Укажи путь к файлу с весами
+    model_filename = '/home/blogerlu/biometrics/biometrics-hack/model_epoch_10_train_0.0809_val_0.1280.pth'  # Укажи путь к файлу с весами
+    model_filename = '/home/blogerlu/biometrics/biometrics-hack/model_epoch_30_train_0.0296_val_0.1138.pth'
     model_transposer.load_state_dict(torch.load(model_filename, map_location=torch.device('cpu')))
 
     # Перевод модели в режим оценки
     model_transposer.eval()
 
     hacker = Hacker(model_transposer)
-    hacker.metric('/home/blogerlu/biometrics/biometrics-hack/embeddings/train/81c731b1-7b16-4bf4-a1b8-eef8639a940d.npy')
+    import pickle
+
+# Открываем файл .pickle
+    with open('/mnt/sda1/hackathons/biometrics-hack/embedding_v3.pickle', 'rb') as file:
+    # Загружаем данные из файла
+       vectors = pickle.load(file)
+
+# Предполагаем, что vectors — это список или массив векторов
+# Проходим по каждому вектору
+    cs = []
+    for vector, nm in vectors.items():
+       #print(nm)
+        try:
+           cos = hacker.metric(nm['embedding'])
+           if cos != 'erorr':
+              cs.append(cos)   
+        except IndexError:
+           print('error')
+    print(cs)
+    print(np.mean(cs))
