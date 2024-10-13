@@ -84,4 +84,10 @@ for epoch in range(epochs):
 
     print(f'Validation Loss: {val_loss / len(val_loader)}')
 
+
+    if (epoch + 1) % 10  == 0:
+        model_filename = f"model_epoch_{epoch+1}_train_{running_loss / len(train_loader):.4f}_val_{val_loss / len(val_loader):.4f}.pth"
+        torch.save(model.state_dict(), model_filename)
+        print(f"Model saved as {model_filename}")
+
 print("Обучение завершено!")
