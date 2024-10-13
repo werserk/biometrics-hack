@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.face_reconstruction import FaceReconstructor
 from insightface.app import FaceAnalysis
 from sklearn.metrics.pairwise import cosine_distances
-from model_train.models import ComplexVectorModel
+from model_train.models import ComplexVectorModel, TransformerModel
 
 class Hacker:
     def __init__(self, model_transposer, ):
@@ -54,7 +54,9 @@ class Hacker:
 
     @staticmethod
     def embeddings_diff(true_embedding: np.ndarray, predicted_embedding: np.ndarray):
-        cosine_dist = 1 - cosine_distances(true_embedding, predicted_embedding)
+        print(true_embedding.shape, predicted_embedding.shape)
+        cosine_dist = 1 - cosine_distances([true_embedding], [predicted_embedding])
+        print('COS', cosine_dist)
         return cosine_dist
 
     def metric(self, path_to_embedding: str):
@@ -71,12 +73,25 @@ class Hacker:
 
 if __name__ == "__main__":
     model_transposer = ComplexVectorModel(input_dim=512, output_dim=512)
+    input_dim = 512  # Размерность входного вектора
+    output_dim = 512  # Размерность выходного вектора
+    nhead = 8  # Количество голов в self-attention
+    num_encoder_layers = 6
+    num_decoder_layers = 6
+    learning_rate = 1e-4
+    epochs = 50
+    batch_size = 32
 
-    model_filename = '/home/blogerlu/biometrics/biometrics-hack/models/model_epoch_150_train_0.3337_val_0.2361.pth'  # Укажи путь к файлу с весами
+    model_transposer = ComplexVectorModel(input_dim=512, output_dim=512)
+    model_transposer = TransformerModel(input_dim=input_dim, output_dim=output_dim,
+                             nhead=nhead, num_encoder_layers=num_encoder_layers,
+                             num_decoder_layers=num_decoder_layers)
+
+    model_filename = '/home/blogerlu/biometrics/biometrics-hack/model_epoch_30_train_0.0296_val_0.1138.pth'  # Укажи путь к файлу с весами
     model_transposer.load_state_dict(torch.load(model_filename, map_location=torch.device('cpu')))
 
     # Перевод модели в режим оценки
     model_transposer.eval()
 
     hacker = Hacker(model_transposer)
-    hacker.metric('/home/blogerlu/biometrics/biometrics-hack/embeddings/train/407e9ee9-c882-4ac4-a57e-064d77fabca0.npy')
+    hacker.metric('/home/blogerlu/biometrics/biometrics-hack/embeddings/train/81c731b1-7b16-4bf4-a1b8-eef8639a940d.npy')
