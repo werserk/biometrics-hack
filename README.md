@@ -22,8 +22,10 @@ Clone Arc2Face repository:
 git clone https://github.com/FoivosPar/Arc2Face.git
 ```
 
-Install dependencies with poetry (requires python 3.12):
+Install dependencies with poetry (requires python 3.11):
 
 ```bash
 poetry install
 ```
+
+Evaluate model here:`notebooks/face_reconstruction.ipynb`
