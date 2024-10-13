@@ -12,17 +12,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.face_reconstruction import FaceReconstructor
 
+
 class Dateset:
     def __init__(self):
         self.data_types = ["test", "train", "val"]
-
 
     @staticmethod
     def create_folder(path_to_folder):
         try:
             os.mkdir(path_to_folder)
         except FileExistsError:
-            print(f'file {path_to_folder} already exists ')
+            print(f"file {path_to_folder} already exists ")
 
     def create_folders(self, path_to_folder: str):
 
@@ -61,6 +61,7 @@ class DatasetI2E(Dateset):
 
         # return face['embedding']
         return embedding
+
     def generate_dataset(self, data: pd.DataFrame, root_path: str, path_to_save: str):
         """
 
@@ -174,8 +175,8 @@ if __name__ == "__main__":
         app.prepare(ctx_id=0, det_size=(640, 640))
         reconstructor = FaceReconstructor(root_dir=".", models_dir="./models", device="cuda")
         with torch.no_grad():
-           dataset = DatasetI2E(reconstructor)
-           dataset.generate_dataset(data, args.root_path, args.path_to_save)
+            dataset = DatasetI2E(reconstructor)
+            dataset.generate_dataset(data, args.root_path, args.path_to_save)
 
     elif args.mod == "E2I":
         dataset = DatasetE2I()

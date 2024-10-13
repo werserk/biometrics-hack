@@ -41,8 +41,8 @@ class FaceReconstructor:
     def image2embedding(self, image: np.array) -> torch.Tensor:
         faces = self.model.get(image)
         faces = sorted(faces, key=lambda x: (x["bbox"][2] - x["bbox"][0]) * (x["bbox"][3] - x["bbox"][1]))[-1]
-#        id_embedding = self.prepare_id_embedding(faces["embedding"])
- 
+        #        id_embedding = self.prepare_id_embedding(faces["embedding"])
+
         return faces["embedding"]
 
     def prepare_id_embedding(self, embedding: Union[np.array, torch.Tensor]) -> torch.Tensor:

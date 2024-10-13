@@ -3,8 +3,9 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
+
 class VectorDataset(Dataset):
-    def __init__(self, input_dir, output_dir, split='train'):
+    def __init__(self, input_dir, output_dir, split="train"):
         self.input_dir = os.path.join(input_dir, split)
         self.output_dir = os.path.join(output_dir, split)
         self.files = os.listdir(self.output_dir)

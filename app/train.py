@@ -9,16 +9,16 @@ import torch.optim as optim
 from model_train.dataset import VectorDataset
 from model_train.models import VectorModel, ComplexVectorModel, TransformerModel
 
-input_dir = '/home/blogerlu/biometrics/biometrics-hack/embeddings'  # Путь к папке с input
-output_dir = '/home/blogerlu/biometrics/biometrics-hack/embeddings_antilopa'  # Путь к папке с output
+input_dir = "/home/blogerlu/biometrics/biometrics-hack/embeddings"  # Путь к папке с input
+output_dir = "/home/blogerlu/biometrics/biometrics-hack/embeddings_antilopa"  # Путь к папке с output
 input_dim = 512  # Размерность входных векторов, например
 batch_size = 10
 epochs = 200
 learning_rate = 1e-3
 
 # Датасеты и загрузчики данных
-train_dataset = VectorDataset(input_dir, output_dir, split='train')
-val_dataset = VectorDataset(input_dir, output_dir, split='val')
+train_dataset = VectorDataset(input_dir, output_dir, split="train")
+val_dataset = VectorDataset(input_dir, output_dir, split="val")
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -34,9 +34,13 @@ epochs = 50
 batch_size = 128
 
 
-model = TransformerModel(input_dim=input_dim, output_dim=output_dim, 
-                         nhead=nhead, num_encoder_layers=num_encoder_layers, 
-                         num_decoder_layers=num_decoder_layers)
+model = TransformerModel(
+    input_dim=input_dim,
+    output_dim=output_dim,
+    nhead=nhead,
+    num_encoder_layers=num_encoder_layers,
+    num_decoder_layers=num_decoder_layers,
+)
 
 criterion = nn.MSELoss()
 criterion = nn.CosineEmbeddingLoss()
@@ -45,7 +49,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.9)
 
 # Обучение модели
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 for epoch in range(epochs):
@@ -56,11 +60,11 @@ for epoch in range(epochs):
 
         # Обнуление градиентов
         optimizer.zero_grad()
-#        print(inputs.shape)
+        #        print(inputs.shape)
         # Прямой проход
         outputs = model(inputs)
- #       print(outputs.shape)
-    #    print(targets.shape)
+        #       print(outputs.shape)
+        #    print(targets.shape)
         # Вычисление потерь
         loss = criterion(outputs, targets, torch.ones(targets.shape[0]).cuda())
 
@@ -71,7 +75,7 @@ for epoch in range(epochs):
         running_loss += loss.item()
 
     # Вывод статистики
-    print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}')
+    print(f"Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}")
 
     # Валидация модели
     model.eval()
@@ -83,14 +87,12 @@ for epoch in range(epochs):
             loss = criterion(outputs, targets, torch.ones(targets.shape[0]).cuda())
             val_loss += loss.item()
 
-    print(f'Validation Loss: {val_loss / len(val_loader)}')
+    print(f"Validation Loss: {val_loss / len(val_loader)}")
 
-
-    if (epoch + 1) % 10  == 0:
+    if (epoch + 1) % 10 == 0:
         model_filename = f"model_epoch_{epoch+1}_train_{running_loss / len(train_loader):.4f}_val_{val_loss / len(val_loader):.4f}.pth"
         torch.save(model.state_dict(), model_filename)
         print(f"Model saved as {model_filename}")
-
 
     scheduler.step()
 
