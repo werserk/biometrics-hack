@@ -6,7 +6,7 @@
 
 Сайт соревнования: [biometricshack.ru](https://biometricshack.ru/) \
 GitHub: [github.com/werserk/biometrics-hack](https://github.com/werserk/biometrics-hack) \
-Презентация: [not ready]()
+Презентация: [presentation](https://docs.google.com/presentation/d/1fhByOffj5jCWEGhLpYXW-iHA1_h4AzGPzQEYM-F_CCc/edit?usp=sharing)
 
 ## Installation
 
